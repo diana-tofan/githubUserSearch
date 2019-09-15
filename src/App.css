@@ -4,8 +4,27 @@
   font-family: 'Lato', sans-serif;
 }
 
-html {
+.header {
   background: #353546;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header .left {
+  color: white;
+  font-weight: bold;
+  display: block;
+  margin-left: 10vw;
+}
+
+.header .right {
+  margin-right: 10vw;
+}
+
+.left div {
+  opacity: .5;
 }
 
 .app {
@@ -14,16 +33,61 @@ html {
 
 .fa-github {
   color: white;
-  /* font-size: 10rem; */
   opacity: .4;
+}
+
+.fa-search {
+  color: #353546;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .search-box {
-  display: inline-block;
+  background: white;
+  opacity: .4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  width: 340px;
 }
 
 .search-input {
-  background: white;
   border: none;
-  opacity: .4;
+  outline: none;
+  margin-left: 10px;
+  font-size: 1rem;
+}
+
+.user-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.user-row:first-of-type {
+  border-top: solid 1px #eeeef3;
+}
+
+.user-row {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  border-bottom: solid 1px #eeeef3;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+}
+
+.count {
+  color: #a4a4a9;
+  margin: 4vh 0;
+}
+
+.user-row:hover {
+  background: #eeeef3;
+}
+
+.avatar {
+  border-radius: 50%;
+  margin: 0 1vw 0 10vw;
 }

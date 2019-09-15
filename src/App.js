@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 
+import logo from './logo.svg';
+
 function App() {
   const [data, setData] = useState(null);
   const [username, setUsername] = useState('');
@@ -11,27 +13,11 @@ function App() {
     setUsername(ev.target.value);
   };
 
-  // async function loadJson(url) { // (1)
-  //   let response = await fetch(url); // (2)
-  
-  //   if (response.status == 200) {
-  //     let json = await response.json(); // (3)
-  //     return json;
-  //   }
-  
-  //   throw new Error(response.status);
-  // }
-  
-  // loadJson('no-such-user.json')
-  //   .catch(alert); // Error: 404 (4)
-
-  // async request() {
-  //   try { 
-  //     let res = await timeout(1000, fetch('/hello'));
-  //   } catch(error) {
-  //     // might be a timeout error
-  //   }
-  // }
+  const onKeyPress = ev => {
+    if (ev.key === "Enter") {
+      searchUsers();
+    }
+  }
 
   function timeout(ms, promise) {
     return new Promise(function(resolve, reject) {
@@ -42,60 +28,47 @@ function App() {
     })
   }
   
-
-  // async function searchUsers () {
-  //   try {
-  //     let response = await fetch(`${url}${username}`);
-  //     if (response.status === 200) {
-  //       let json = await response.json();
-  //       setData(json);
-  //     }
-  //   }
-  //   catch(error) {
-  //     console.log(error);
-  //   }
-
-  //   // setData(users);
-
-  //   // return users;
-  
-  //   // fetch(`${url}${username}`)
-  //   //   .then(response => response.json())
-  //   //   .then(json => {
-  //   //     console.log(json);
-  //   //     setData(json);
-  //   //     })
-  //   //   .catch(err => console.log(err));
-  // };
-
   function searchUsers () {
-    timeout(1000, fetch(`${url}${username}`))
-    .then(response => response.json())
-    .then(json => setData(json))
-    .catch(function(error) {
-      // might be a timeout error
-    })  
+    fetch(`${url}${username}`)
+      .then(response => response.json())
+      .then(json => { setData(json); console.log(json) })
+      .catch(function(error) {
+        console.log(error);
+      });
   }
 
   return (
     <div className="app">
-      <header className="header">
-       <span>Github users</span>
-       <i className="fab fa-github"></i>
-      </header>
-      <body className="content">
-        <div class="search-box">
-          <input className="search-input" type="text" onChange={onChange} placeholder="Search..." autoFocus></input>
-          <span className="fa fa-search" onClick={searchUsers}></span>
-       </div>
+      <div className="header">
+        <div className="left">
+          <img src={logo} height={30} alt="Github" />
+          <div>user search</div>
+        </div>
+        <div className="right">
+          <div className="search-box">
+            <input className="search-input" type="text" onChange={onChange} onKeyPress={onKeyPress} placeholder="Search..." autoFocus></input>
+            <span className="fa fa-search" onClick={searchUsers}></span>
+          </div>
+        </div>
+      </div>
+      <div className="content">
        {
-         data && data.items && <ul>
-           {
-             data.items.map(user => <li>{user.login}</li>)
-           }
-         </ul>
+         data && data.items &&
+          <div>
+            <div className="count">{data.total_count} users found</div>
+            <ul className="user-list">
+              {
+                data.items.map(user =>
+                <a key={user.id} className="user-row" href={user.html_url} target="_blank">
+                  <img src={user.avatar_url} width={40} height={40} className="avatar" />
+                  <span className="username">{user.login}</span>
+                </a>
+                )
+              }
+            </ul>
+          </div>
        }
-      </body>
+      </div>
     </div>
   );
 }
