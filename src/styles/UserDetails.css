@@ -12,6 +12,10 @@
   margin: 0 40px;
 }
 
+.basic-info div {
+  margin: 10px 0;
+}
+
 .basic-info .login {
   opacity: .4;
 }
@@ -19,4 +23,16 @@
 .user-details .left {
   border-right: solid 1px #eeeef3;
   max-width: 40%;
+}
+
+.user-details .right {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+  width: 100%;
+}
+
+.column .number {
+  font-size: 4rem;
 }

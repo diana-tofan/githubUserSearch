@@ -14,14 +14,25 @@ export const Modal = ({ handleClose, isModalOpen, userDetails }) => {
             <div className="basic-info">
               <h3 className="login">{userDetails.login}</h3>
               { userDetails.name && <h3 className="name">{userDetails.name}</h3> }
-              { userDetails.bio && <span className="bio">{userDetails.bio}</span> }
-              { userDetails.company && <span className="company">Workplace: {userDetails.company}</span> }
-              { userDetails.location && <span className="location">Location: {userDetails.location}</span> }
-              { userDetails.email && <span className="email">Contact: {userDetails.email}</span> }
+              { userDetails.bio && <div>{userDetails.bio}</div> }
+              { userDetails.company && <div>Workplace: {userDetails.company}</div> }
+              { userDetails.location && <div>Location: {userDetails.location}</div> }
+              { userDetails.email && <div>Contact: {userDetails.email}</div> }
             </div>
           </div>
           <div className="right">
-            
+            <div className="column">
+              <div class="number">{userDetails.public_repos}</div>
+              <div>repositories</div>
+            </div>
+            <div className="column">
+              <div class="number">{userDetails.followers}</div>
+              <div>followers</div>
+            </div>
+            <div className="column">
+              <div class="number">{userDetails.following}</div>
+              <div>following</div>
+            </div>
           </div>
         </div>
         <i onClick={handleClose} className="fas fa-times" />
