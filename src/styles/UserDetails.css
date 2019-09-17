@@ -1,0 +1,22 @@
+.user-details {
+  display: flex;
+}
+
+.avatar-large {
+  margin-top: 30px;
+  width: 50%;
+  height: auto;
+}
+
+.basic-info {
+  margin: 0 40px;
+}
+
+.basic-info .login {
+  opacity: .4;
+}
+
+.user-details .left {
+  border-right: solid 1px #eeeef3;
+  max-width: 40%;
+}
