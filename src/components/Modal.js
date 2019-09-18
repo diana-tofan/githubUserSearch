@@ -22,7 +22,7 @@ export const Modal = ({ handleClose, isModalOpen, userDetails }) => {
           </div>
           <div className="right">
             <div className="column">
-              <div class="number">{userDetails.public_repos}</div>
+              <div className="number">{userDetails.public_repos}</div>
               <div>repositories</div>
             </div>
             <div className="column">

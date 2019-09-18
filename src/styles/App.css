@@ -112,3 +112,29 @@
   background: #ffffff;
   border: solid 1px #eeeef3;
 }
+
+.pagination {
+  padding: 40px 0;
+}
+
+.pagination ul {
+  display: inline-block;
+}
+
+.pagination li {
+  display: inline-block;
+  padding: 0 20px;
+  cursor: pointer;
+  outline: none;
+}
+
+.active {
+  font-weight: bold; 
+  border: solid 2px #353546;
+  color: #353546;
+}
+
+.page-link {
+  cursor: pointer;
+  outline: none;
+}

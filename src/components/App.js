@@ -6,13 +6,17 @@ import { SearchCount } from './SearchCount';
 import { UserList } from './UserList';
 import { Modal } from './Modal';
 
+import ReactPaginate from 'react-paginate';
+
 const URL = "https://api.github.com/search/users?q=";
 
 function App() {
   const [state, setState] = useState({
     searchResults: null,
     username: '',
-    userDetails: {}
+    userDetails: {},
+    currentPage: null,
+    maxPage: null
   });
 
   const onChange = ev => {
@@ -22,7 +26,7 @@ function App() {
 
   const onKeyPress = ev => {
     if (ev.key === "Enter") {
-      searchUsers();
+      searchUsers(1);
     }
   }
 
@@ -50,12 +54,48 @@ function App() {
         console.log(error);
       });
   }
+
+  function getUsers() {
+  const url = `${URL}${state.username}`;
+  let users = [];
+  return new Promise((resolve, reject) => fetch(url)
+    .then(response => {
+      console.log(response.headers.get('Link'))
+        if (response.status !== 200)  {
+          throw `${response.status}: ${response.statusText}`;
+        }
+        response.json().then(data => { 
+          users = users.concat(data.items);
+          if(data.next) {
+            getUsers(data.next, users).then(resolve).catch(reject)
+          } else {
+            resolve(users);
+          }
+        }).catch(reject);
+    }).catch(reject));
+}
+
+// <https://api.github.com/search/users?q=dfdf&page=2>; rel="next", <https://api.github.com/search/users?q=dfdf&page=10>; rel="last"
+
+const parseLinkHeader = linkHeader => {
+  setState(prevState => ({ ...prevState, maxPage: 1 }))
+  console.log(linkHeader)
+
+  if (linkHeader) {
+    const lastPage = linkHeader.split(',')[1];
+    const lastPageLink = lastPage.split(';')[0];
+    setState(prevState => ({ ...prevState, maxPage: parseInt(lastPageLink.replace(/[^0-9]/g,'')) }))
+  }
+}
   
-  function searchUsers () {
-    fetch(`${URL}${state.username}`)
-      .then(response => response.json())
+  function searchUsers (page) {
+    fetch(`${URL}${state.username}&page=${page}`)
+      .then(response => {
+        parseLinkHeader(response.headers.get('Link'));
+        return response.json();
+       })
       .then(json => {
-        setState(prevState => ({ ...prevState, searchResults: json }));
+        setState(prevState => ({ ...prevState, searchResults: json, currentPage: 1 }));
         console.log(json)
       })
       .catch(function(error) {
@@ -70,16 +110,33 @@ function App() {
     setState(prevState => ({ ...prevState, userDetails: {} }));
   };
 
+  const onPageChange = page => {
+    const selectedPage = page.selected;
+    if (state.maxPage >= selectedPage) {
+      searchUsers(selectedPage);
+    }
+  }
+
   return (
     <div className="app">
       <Modal isModalOpen={!!Object.keys(userDetails).length} handleClose={handleClose} userDetails={userDetails} />
-      <Header onChange={onChange} onKeyPress={onKeyPress} searchUsers={searchUsers} />
+      <Header onChange={onChange} onKeyPress={onKeyPress} searchUsers={() => searchUsers(1)} />
       <div className="content">
        {
          state.searchResults && state.searchResults.items && 
           <div>
-            <SearchCount count={state.searchResults.items.length} />
+            <SearchCount count={state.searchResults.total_count} />
             <UserList users={state.searchResults.items} onClick={user => onClick(user)} />
+            <ReactPaginate
+              pageCount={state.maxPage}
+              pageRangeDisplayed={10}
+              marginPagesDisplayed={2}
+              initialPage={0}
+              onPageChange={onPageChange}
+              containerClassName={'pagination'}
+              activeClassName={'active'}
+              pageLinkClassName={'page-link'}
+            />
           </div>
        }
       </div>
