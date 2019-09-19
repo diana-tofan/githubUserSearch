@@ -59,7 +59,7 @@ $ npm run deploy
 * [React.js](https://reactjs.org/) - The web framework used
 
 ## Authors
-* **Diana Tofan** - https://github.com/diana-tofan/triangleChallenge
+* **Diana Tofan** - https://github.com/diana-tofan/githubUserSearch
 
 ## Implementation Choices
 React.js was mainly used for simplicity, performance, testability and a smooth state management.
