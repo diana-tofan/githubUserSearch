@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import '../styles/App.css';
+import ReactPaginate from 'react-paginate';
 
 import { Header } from './Header';
 import { SearchCount } from './SearchCount';
 import { UserList } from './UserList';
 import { Modal } from './Modal';
+import { Spinner } from './Spinner';
 
-import ReactPaginate from 'react-paginate';
+import '../styles/App.css';
 
 const URL = "https://api.github.com/search/users?q=";
 
@@ -16,8 +17,11 @@ function App() {
     username: '',
     userDetails: {},
     currentPage: null,
-    maxPage: null
+    maxPage: null,
+    showSpinner: false
   });
+
+  const { searchResults, maxPage, userDetails, username, showSpinner } = state;
 
   const onChange = ev => {
     const username = ev.target.value;
@@ -28,23 +32,14 @@ function App() {
     if (ev.key === "Enter") {
       searchUsers(1);
     }
-  }
+  };
 
   const onClick = user => {
     getUserDetails(user.login);
   };
 
-  function timeout(ms, promise) {
-    return new Promise(function(resolve, reject) {
-      setTimeout(function() {
-        reject(new Error("timeout"))
-      }, ms)
-      promise.then(resolve, reject)
-    })
-  }
-
-  function getUserDetails (user) {
-    const url = 'https://api.github.com/users/';
+  const getUserDetails = user => {
+    const url = "https://api.github.com/users/";
     fetch(`${url}${user}`)
       .then(response => response.json())
       .then(json => {
@@ -53,57 +48,31 @@ function App() {
       .catch(function(error) {
         console.log(error);
       });
-  }
-
-  function getUsers() {
-  const url = `${URL}${state.username}`;
-  let users = [];
-  return new Promise((resolve, reject) => fetch(url)
-    .then(response => {
-      console.log(response.headers.get('Link'))
-        if (response.status !== 200)  {
-          throw `${response.status}: ${response.statusText}`;
-        }
-        response.json().then(data => { 
-          users = users.concat(data.items);
-          if(data.next) {
-            getUsers(data.next, users).then(resolve).catch(reject)
-          } else {
-            resolve(users);
-          }
-        }).catch(reject);
-    }).catch(reject));
-}
-
-// <https://api.github.com/search/users?q=dfdf&page=2>; rel="next", <https://api.github.com/search/users?q=dfdf&page=10>; rel="last"
+  };
 
 const parseLinkHeader = linkHeader => {
   setState(prevState => ({ ...prevState, maxPage: 1 }))
-  console.log(linkHeader)
-
   if (linkHeader) {
     const lastPage = linkHeader.split(',')[1];
     const lastPageLink = lastPage.split(';')[0];
-    setState(prevState => ({ ...prevState, maxPage: parseInt(lastPageLink.replace(/[^0-9]/g,'')) }))
+    setState(prevState => ({ ...prevState, maxPage: parseInt(lastPageLink.replace(/[^0-9]/g,'')) }));
   }
 }
   
-  function searchUsers (page) {
-    fetch(`${URL}${state.username}&page=${page}`)
+  const searchUsers = page => {
+    setState(prevState => ({ ...prevState, searchResults: null, showSpinner: true }));
+    fetch(`${URL}${username}&page=${page}`)
       .then(response => {
         parseLinkHeader(response.headers.get('Link'));
         return response.json();
        })
       .then(json => {
-        setState(prevState => ({ ...prevState, searchResults: json, currentPage: 1 }));
-        console.log(json)
+        setState(prevState => ({ ...prevState, searchResults: json, currentPage: 1, showSpinner: false }));
       })
       .catch(function(error) {
         console.log(error);
       });
   }
-
-  const { userDetails } = state;
 
   const handleClose = ev => {
     ev.stopPropagation();
@@ -112,7 +81,7 @@ const parseLinkHeader = linkHeader => {
 
   const onPageChange = page => {
     const selectedPage = page.selected;
-    if (state.maxPage >= selectedPage) {
+    if (maxPage >= selectedPage) {
       searchUsers(selectedPage);
     }
   }
@@ -123,12 +92,12 @@ const parseLinkHeader = linkHeader => {
       <Header onChange={onChange} onKeyPress={onKeyPress} searchUsers={() => searchUsers(1)} />
       <div className="content">
        {
-         state.searchResults && state.searchResults.items && 
+         searchResults && searchResults.items && 
           <div>
-            <SearchCount count={state.searchResults.total_count} />
-            <UserList users={state.searchResults.items} onClick={user => onClick(user)} />
+            <SearchCount count={searchResults.total_count} />
+            <UserList users={searchResults.items} onClick={user => onClick(user)} />
             <ReactPaginate
-              pageCount={state.maxPage}
+              pageCount={maxPage}
               pageRangeDisplayed={10}
               marginPagesDisplayed={2}
               initialPage={0}
@@ -139,6 +108,7 @@ const parseLinkHeader = linkHeader => {
             />
           </div>
        }
+       { showSpinner && <Spinner /> }
       </div>
     </div>
   );

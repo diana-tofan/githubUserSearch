@@ -1,0 +1,45 @@
+.header {
+  background: #353546;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header .left {
+  color: white;
+  font-weight: bold;
+  display: block;
+  margin-left: 10vw;
+}
+
+.header .right {
+  margin-right: 10vw;
+}
+
+.subtitle {
+  opacity: .5;
+}
+
+.fa-search {
+  color: #353546;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.search-box {
+  background: white;
+  opacity: .4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  width: 340px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  font-size: 1rem;
+}

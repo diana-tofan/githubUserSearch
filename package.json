@@ -31,5 +31,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://diana-tofan.github.io/githubUserSearch"
+  "homepage": "https://diana-tofan.github.io/githubUserSearch",
+  "devDependencies": {
+    "@testing-library/react": "^9.1.4"
+  }
 }

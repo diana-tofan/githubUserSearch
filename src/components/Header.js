@@ -1,5 +1,7 @@
 import React from 'react';
+
 import logo from '../svg/logo.svg';
+import '../styles/Header.css';
 
 export const Header = ({ onChange, onKeyPress, searchUsers }) => 
   <div className="header">
