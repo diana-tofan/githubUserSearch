@@ -28,6 +28,6 @@ export const UserDetails = ({ userDetails }) =>
         <div className="number">{userDetails.following}</div>
         <div>following</div>
       </div>
-      <a href="" target="_blank">Go to Github page</a>
+      <a href={userDetails.html_url} target="_blank" rel="noopener noreferrer" className="link">Go to Github page</a>
     </div>
   </div>

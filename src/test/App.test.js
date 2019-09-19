@@ -1,9 +1,24 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import { render, waitForElement } from '@testing-library/react';
+import { StateMock } from '@react-mock/state';
+import App from '../components/App';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+const renderComponent = ({ state }) =>
+  render(
+    <StateMock state={{ state }}>
+      <App />
+    </StateMock>
+  );
+
+const state = {
+  searchResults: null,
+  username: '',
+  userDetails: {},
+  currentPage: null,
+  maxPage: null,
+  isLinkHeaderParsed: false
+};
+  
+it('renders without crashing', async () => {
+  const { getByText } = renderComponent({ state });
 });

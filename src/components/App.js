@@ -5,7 +5,6 @@ import { Header } from './Header';
 import { SearchCount } from './SearchCount';
 import { UserList } from './UserList';
 import { Modal } from './Modal';
-import { Spinner } from './Spinner';
 
 import '../styles/App.css';
 
@@ -18,10 +17,10 @@ function App() {
     userDetails: {},
     currentPage: null,
     maxPage: null,
-    showSpinner: false
+    isLinkHeaderParsed: false
   });
 
-  const { searchResults, maxPage, userDetails, username, showSpinner } = state;
+  const { searchResults, currentPage, maxPage, userDetails, username, isLinkHeaderParsed } = state;
 
   const onChange = ev => {
     const username = ev.target.value;
@@ -50,24 +49,27 @@ function App() {
       });
   };
 
-const parseLinkHeader = linkHeader => {
-  setState(prevState => ({ ...prevState, maxPage: 1 }))
-  if (linkHeader) {
-    const lastPage = linkHeader.split(',')[1];
-    const lastPageLink = lastPage.split(';')[0];
-    setState(prevState => ({ ...prevState, maxPage: parseInt(lastPageLink.replace(/[^0-9]/g,'')) }));
+  const parseLinkHeader = linkHeader => {
+    setState(prevState => ({ ...prevState, maxPage: 1 }))
+    if (linkHeader) {
+      const lastPage = linkHeader.split(',')[1];
+      const lastPageLink = lastPage.split(';')[0];
+      const page = lastPageLink.split('=')[3];
+      setState(prevState => ({ ...prevState, maxPage: parseInt(page.substring(0, page.length - 1)), isLinkHeaderParsed: true }));
+    }
   }
-}
   
   const searchUsers = page => {
-    setState(prevState => ({ ...prevState, searchResults: null, showSpinner: true }));
-    fetch(`${URL}${username}&page=${page}`)
+    return fetch(`${URL}${username}&per_page=10&page=${page}`, {
+      headers: {
+        'Authorization': 'token 2507e5a558b7b451a20e05cfa37ec7cbf6f7a2f3'
+      }})
       .then(response => {
-        parseLinkHeader(response.headers.get('Link'));
+        !isLinkHeaderParsed && parseLinkHeader(response.headers.get('Link'));
         return response.json();
        })
       .then(json => {
-        setState(prevState => ({ ...prevState, searchResults: json, currentPage: 1, showSpinner: false }));
+        setState(prevState => ({ ...prevState, searchResults: json, currentPage: 1 }));
       })
       .catch(function(error) {
         console.log(error);
@@ -81,9 +83,8 @@ const parseLinkHeader = linkHeader => {
 
   const onPageChange = page => {
     const selectedPage = page.selected;
-    if (maxPage >= selectedPage) {
-      searchUsers(selectedPage);
-    }
+    setState(prevState => ({ ...prevState, currentPage: selectedPage + 1 }));
+    searchUsers(selectedPage);
   }
 
   return (
@@ -100,7 +101,7 @@ const parseLinkHeader = linkHeader => {
               pageCount={maxPage}
               pageRangeDisplayed={10}
               marginPagesDisplayed={2}
-              initialPage={0}
+              initialPage={currentPage - 1}
               onPageChange={onPageChange}
               containerClassName={'pagination'}
               activeClassName={'active'}
@@ -108,7 +109,6 @@ const parseLinkHeader = linkHeader => {
             />
           </div>
        }
-       { showSpinner && <Spinner /> }
       </div>
     </div>
   );
